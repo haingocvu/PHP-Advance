@@ -1,7 +1,6 @@
 <?php
-
-function curl_download($url, $saveTo)
-{
+require './1.php';
+function curl_download($url, $saveTo){
     // Mở một file mới với đường dẫn và tên file là tham số $saveTo
     $fp = fopen ($saveTo, 'w+');
      
@@ -29,7 +28,64 @@ function curl_download($url, $saveTo)
      
     return $result;
 }
-curl_download('https://khoapham.vn/public/images/logo/php-nc.png', 'download/demo2.png');
+
+function get_img($url) { 
+
+    $nodes = new DOMDocument();
+    $nodes->loadHTML('<?xml encoding="utf-8" ?>' . $url);
+    $i=0;
+    foreach($nodes->getElementsByTagName('img') as $link) { 
+        $links[] = [
+            'url' => $link->getAttribute('src')
+        ];
+        $i++;
+        if($i==12) break;
+    } 
+    
+    //Return the links 
+    return $links; 
+}
+function get_price($url) { 
+
+    $nodes = new DOMDocument();
+    $nodes->loadHTML('<?xml encoding="utf-8" ?>' . $url);
+    
+    $i=0;
+    foreach($nodes->getElementsByTagName('a') as $tag) { 
+        if($tag->getAttribute('data-price')>0 && $i%2==0){
+            $links[] =[
+                'price'=> $tag->getAttribute('data-price'),
+                'name' => $tag->getAttribute('title')
+            ];
+        }
+        $i++;
+       
+    } 
+    return $links; 
+}
+$arrImg = get_img($link);
+$arrPrice = get_price($link);
+for($i=0;$i<count($arrPrice);$i++){
+    $arrPrice[$i]['url'] = $arrImg[$i]['url'];
+}
+
+// print_r($arrPrice);
+// die;
+$type = 1;
+$valuesInsert = '';
+for($i=0;$i<count($arrPrice);$i++){
+    $name = $arrPrice[$i]['name'];
+    $price =  $arrPrice[$i]['price'];
+    $imageName = explode('/',$arrPrice[$i]['url'])[9];;
+    $valuesInsert .= "($type, '$name','$price','$imageName'),";
+
+    //curl_download($arrPrice[$i]['url'], "images/$imageName");
+}
+
+$myfile = fopen("result1.php", "w") or die("Unable to open file!");
+fwrite($myfile, $valuesInsert);
+fclose($myfile);
+
 echo 'successfully';
 
 ?>

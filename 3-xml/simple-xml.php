@@ -19,9 +19,17 @@
             </course>
         </tutorialspoint>';
 
-    $xml = simplexml_load_string($data) or die("Error: Cannot create object");
-    foreach($xml->children()->children() as $books) { 
-        echo $books->name['a']; 
-    }
+    // $xml = simplexml_load_string($data) or die("Error: Cannot create object");
+    // foreach($xml->children()->children() as $books) { 
+    //     echo $books->name['a']; 
+    // }
 
+    $xml = simplexml_load_file('https://vnexpress.net/rss/suc-khoe.rss') or die('err');
+    foreach($xml->children() as $books) { 
+        $item = $books->item; 
+        foreach($item as $i){
+            echo "<pre>";
+            print_r($i);
+        }
+    }
     ?>

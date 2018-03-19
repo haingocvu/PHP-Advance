@@ -1,0 +1,10 @@
+<IfModule mod_rewrite.c>
+    Options -Multiviews
+    RewriteEngine On
+    RewriteBase /phpnc2112_m1/buoi8/front-controller/
+    RewriteCond %{THE_REQUEST} /public/([^\s?]*) [NC]
+    RewriteRule ^ %1 [L,NE,R=302]
+
+    RewriteRule ^((?!public/).*)$ public/index.php?url=$1 [QSA,L] [L,NC]
+
+</IfModule>
